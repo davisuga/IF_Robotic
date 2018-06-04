@@ -1,0 +1,33 @@
+#include <Ultrasonic.h>
+#define pino_trigger 6
+#define pino_echo 5
+float cmMsec, inMsec;
+int buz = 9;
+Ultrasonic ultrasonic(pino_trigger, pino_echo);
+void setup() {
+  // put your setup code here, to run once:
+Serial.begin(9600);
+Serial.println("Lendo dados do sensor!!!");
+pinMode(buz, OUTPUT);
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+long microsec = ultrasonic.timing();
+cmMsec = ultrasonic.convert(microsec, Ultrasonic::CM); 
+inMsec = ultrasonic.convert(microsec, Ultrasonic::IN);
+//Exibe informações no serial monitor
+Serial.print("Distância em cm: ");
+Serial.print(cmMsec);
+Serial.print(" - Distância em polegadas");
+Serial.println(inMsec);
+delay(100);
+if(cmMsec <= 10){
+  digitalWrite(buz, HIGH);
+  Serial.println("Muito perto!");
+  }
+  else{
+    digitalWrite(buz, LOW);
+    }
+}
