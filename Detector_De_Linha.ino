@@ -59,14 +59,14 @@ void esquerda(){
      //Vira o robo para a esquerda
     analogWrite(MD1, 128); //Motor Direita no Sentido Horário
     analogWrite(MD2, 0);
-    analogWrite(ME1, 50); //Motor Esquerda girando devagar
-    analogWrite(ME2, 0);
+    analogWrite(ME1, 0); //Motor Esquerda girando devagar
+    analogWrite(ME2, 128);
   }
   
 void direita(){
     // Vira o robo para a Direita
-    analogWrite(MD1, 50); //Motor Direita girando devagar
-    analogWrite(MD2, 0);
+    analogWrite(MD1, 0); //Motor Direita girando devagar
+    analogWrite(MD2, 128);
     analogWrite(ME1, 128); //Motor Esquerda no Sentido Horário
     analogWrite(ME2, 0);
   }
