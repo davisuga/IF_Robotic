@@ -1,7 +1,7 @@
-
-// Antonio Mendes M. Jr
-// Projeto Wee v1.0 21/05/2014
-
+#define sensorD 7
+#define sensorE 3
+int branco;
+int preto;
 #include <Servo.h> // importando biblioteca de servo motor
 #include <Ultrasonic.h> // importando biblioteca do ultrassonico
 
@@ -12,11 +12,10 @@
 #define MDT 6
 #define MEF 9
 #define MET 10
+
 int distancia;  
-
-const int velocidade=130; // velocidade 0-255
-
-const float velAng=40; //ESSA PORRA  40 VIU
+int velocidade=90; // velocidade 0-130
+float velAng=25.0; 
 
 Servo servo; // cria um obejeto Servo
 
@@ -26,19 +25,19 @@ long microsec;
 Ultrasonic ultra(pinoTrigger,pinoEcho); // criando um objeto ultrassonico
 
 void virar(String direcao, int graus) {
-  int tempo = 1000* graus/velAng;
+  int tempo = 900* graus/velAng;
   if (direcao == "esquerda") {
-    analogWrite(MEF, velocidade);
-    analogWrite(MDT, velocidade);
-    delay(tempo);
-    analogWrite(MEF, 0);
-    analogWrite(MDT, 0);
-  } else if (direcao == "direita") {
-    analogWrite(MDF, velocidade*0.9);
-    analogWrite(MET, velocidade*0.9);
+    analogWrite(MDF, velocidade);
+    analogWrite(MET, velocidade);
     delay(tempo);
     analogWrite(MDF, 0);
     analogWrite(MET, 0);
+  } else if (direcao == "direita") {
+    analogWrite(MDT, velocidade);
+    analogWrite(MEF, velocidade);
+    delay(tempo+120);
+    analogWrite(MDT, 0);
+    analogWrite(MEF, 0);
   }
 }
 
@@ -58,73 +57,48 @@ void tras(int tempo) {
   analogWrite(MET, 0);
 }
 
+
+
 void testarCurva() {
   virar("esquerda", 90);
   delay(500);
   virar("direita", 90);
   delay(500);
+  
+  
 }
 
 void desviar(String direcao) {
   String direcao_oposta;
-  int servo_direcao;
   if (direcao == "esquerda") {
     direcao_oposta = "direita";
-    servo_direcao = 0;
   }
   if (direcao == "direita") {
     direcao_oposta = "esquerda";
-    servo_direcao = 180;
   }
   
   virar(direcao, 90);
   delay(500);
-  servo.write(servo_direcao);
-  
-  microsec = ultra.timing();
-  cmMsec = ultra.convert(microsec, Ultrasonic::CM);
-  while(cmMsec <= 20 && cmMsec >= 0) {
-    frente(500);
-    microsec = ultra.timing();
-    cmMsec = ultra.convert(microsec, Ultrasonic::CM);
-  }
-  frente(1000);
-
+  frente(1500);
   delay(500);
   virar(direcao_oposta, 90);
   delay(500);
-  
-  microsec = ultra.timing();
-  cmMsec = ultra.convert(microsec, Ultrasonic::CM);
-  while(cmMsec > 20) {
-    frente(500);
-    microsec = ultra.timing();
-    cmMsec = ultra.convert(microsec, Ultrasonic::CM);
-  }
-  
-  microsec = ultra.timing();
-  cmMsec = ultra.convert(microsec, Ultrasonic::CM);
-  while(cmMsec <= 20 && cmMsec >= 0) {
-    frente(500);
-    microsec = ultra.timing();
-    cmMsec = ultra.convert(microsec, Ultrasonic::CM);
-  }
-  frente(1000);
-  
+  frente(1500);
   delay(500);
   virar(direcao_oposta, 90);
+  delay(500);
+  frente(1500);
   delay(500);
   virar(direcao, 90);
 }
 
 void setup(){
 
-  Serial.println('passeo');
   pinMode(MDF,OUTPUT);
   pinMode(MDT,OUTPUT);
   pinMode(MEF,OUTPUT);
   pinMode(MET,OUTPUT);
-  servo.attach(3);
+//  servo.attach(13);
   servo.write(90);
   Serial.begin(9600);
 
@@ -133,19 +107,43 @@ void loop(){
   microsec = ultra.timing();
   cmMsec = ultra.convert(microsec, Ultrasonic::CM);
   
-  Serial.println('vrau');
   Serial.print("Distancia em cm: ");
-  Serial.print(cmMsec);
+  Serial.println(cmMsec);
   
-  delay(500);
-  
-  testarCurva();
-  
-  /*
-  if (cmMsec <= 20 && cmMsec >= 0) {
+  delay(90);
+  if (cmMsec < 21){
     desviar("esquerda");
-  } else if (cmMsec > 20) {
-    frente(500);
+  } 
+    
+  if(digitalRead(sensorE) && digitalRead(sensorD)) //Se nenhuma luz for refletida para os sensores
+  {
+    //Move para Trás com velocidade reduzida e aguarda 100 milissegundos
+    tras(500);
   }
-  */
- }
+
+ 
+
+  else if(digitalRead(sensorE)) //Senão se o sensor da Esquerda detectar a linha preta
+  {
+    //Move para Esquerda
+    virar(esquerda, 30);
+  }
+
+ 
+
+  else if(digitalRead(sensorD)) //Senão se o sensor da Direita detectar a linha preta
+  {
+    //Move para a Direita
+    virar(direita, 30);
+  } 
+
+ 
+
+  else //Senão
+  {
+    //Move para Frente
+    frente(300)
+  }
+  }
+
+ 
