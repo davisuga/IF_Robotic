@@ -126,7 +126,7 @@ void loop(){
   else if(digitalRead(sensorE)) //Senão se o sensor da Esquerda detectar a linha preta
   {
     //Move para Esquerda
-    virar(esquerda, 30);
+    virar("esquerda", 30);
   }
 
  
@@ -134,7 +134,7 @@ void loop(){
   else if(digitalRead(sensorD)) //Senão se o sensor da Direita detectar a linha preta
   {
     //Move para a Direita
-    virar(direita, 30);
+    virar("direita", 30);
   } 
 
  
